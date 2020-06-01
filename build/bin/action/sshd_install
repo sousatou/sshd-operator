@@ -6,7 +6,7 @@ echo "INSTALLING" > $STAGEFILE
 yum install -y openssh-server passwd procps net-tools findutils which
 
 ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -N ''
-/usr/sbin/sshd -D &
+/usr/sbin/sshd -D -E /root/sshd.log &
 
 adduser $1
 usermod -a -G wheel $1

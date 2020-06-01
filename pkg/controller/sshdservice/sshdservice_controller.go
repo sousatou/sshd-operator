@@ -184,26 +184,30 @@ func (r *ReconcileSshdService) Reconcile(request reconcile.Request) (reconcile.R
 
 // newPodForCR returns a busybox pod with the same name/namespace as the cr
 func newPodForCR(cr *sshdoperatorv1alpha1.SshdService) *corev1.Pod {
-	labels := map[string]string{
-		"app": "sshd",
-		"cr": cr.Name,
-	}
-	return &corev1.Pod{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      cr.Name,
-			Namespace: cr.Namespace,
-			Labels:    labels,
-		},
-		Spec: corev1.PodSpec{
-			Containers: []corev1.Container{
-				{
-					Name:    "main",
-					Image:   "fedora",
-					Command: []string{"sleep", "infinity"},
-				},
-			},
-		},
-	}
+  labels := map[string]string{
+    "app": "sshd",
+    "cr": cr.Name,
+  }
+  pr := true
+  return &corev1.Pod{
+    ObjectMeta: metav1.ObjectMeta{
+      Name:      cr.Name,
+      Namespace: cr.Namespace,
+      Labels:    labels,
+    },
+    Spec: corev1.PodSpec{
+      Containers: []corev1.Container{
+        {
+          Name:    "main",
+          Image:   "fedora",
+          Command: []string{"sleep", "infinity"},
+          SecurityContext: &corev1.SecurityContext{
+            Privileged: &pr,
+          },
+        },
+      },
+    },
+  }
 }
 
 func newServiceForCR(cr *sshdoperatorv1alpha1.SshdService) *corev1.Service {

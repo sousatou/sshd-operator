@@ -2,10 +2,12 @@
 echo "BEGIN: $0"
 
 if ! [ -e ./last_check ]; then
-  touch ./last_check
+  date '+%s' > ./last_check
 fi
-c=$(find /root -name ./last_check -mmin -1)
-if [ "$c" != "" ] ; then
+p=$(cat ./last_check)
+c=$(date '+%s')
+e=$(expr $c - $p)
+if [ $e -gt 180 ] ; then
   echo "END(Success): $0, Nothing to do."
   exit 0
 fi
@@ -24,7 +26,7 @@ if [ "$a" == "$b" ]; then
 else
   echo "Updated. Restarting sshd."
   kill `cat /var/run/sshd.pid`
-  /usr/sbin/sshd -D &
+  /usr/sbin/sshd -D -E /root/sshd.log &
 fi
 
 echo "RUNNING" > $STAGEFILE
