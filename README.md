@@ -1,5 +1,5 @@
 # sshd-operator
-To run the operator in (normal)Kubernetes clusters:
+## To run the operator in (normal)Kubernetes clusters:
 
 ```
 # kubectl create -f deploy/crds/sshd-operator.sousatou.com_sshdservices_crd.yaml
@@ -32,7 +32,7 @@ When "Stage" field become "RUNNING", then you can connect to the pod using ssh c
   
 ---
 
-To run the operator in OpenShift clusters:
+## To run the operator in OpenShift clusters:
 
 ```
 # oc create -f deploy/crds/sshd-operator.sousatou.com_sshdservices_crd.yaml
