@@ -23,12 +23,12 @@ Status:
   Stage:     RUNNING
 ```
 
-When "Stage" field become "RUNNING", then you can connect to the pod using ssh command.
-  IP address: node machine's address(any machine in the cluster)
-  Port: Nodeport number from status(above)
-  User: "user1" (which is specified in the CR)
-  Password: Password from status(above, auto-generated)
-  ex) # ssh -p 31039 user1@192.168.0.100
+When "Stage" field become "RUNNING", then you can connect to the pod using ssh command.  
+  IP address: node machine's address(any machine in the cluster)  
+  Port: Nodeport number from status(above)  
+  User: "user1" (which is specified in the CR)  
+  Password: Password from status(above, auto-generated)  
+  ex) # ssh -p 31039 user1@192.168.0.100  
   
 ---
 
@@ -56,12 +56,11 @@ Status:
   Nodeport:  31039
   Password:  fgDsc3WD
   Stage:     RUNNING
----
+```
 
-When "Stage" field become "RUNNING", then you can connect to the pod using ssh command.
-  IP address: node machine's address(any machine in the cluster)
-  Port: Nodeport number from status(above)
-  User: "user1" (which is specified in the CR)
-  Password: Password from status(above, auto-generated)
-  ex) # ssh -p 31039 user1@192.168.0.100
-  
+When "Stage" field become "RUNNING", then you can connect to the pod using ssh command.  
+  IP address: node machine's address(any machine in the cluster)  
+  Port: Nodeport number from status(above)  
+  User: "user1" (which is specified in the CR)  
+  Password: Password from status(above, auto-generated)  
+  ex) # ssh -p 31039 user1@192.168.0.100  
