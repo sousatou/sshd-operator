@@ -1,0 +1,6 @@
+apiVersion: sshd-operator.sousatou.com/v1alpha1
+kind: SshdService
+metadata:
+  name: example-sshdservice
+spec:
+  username: user1

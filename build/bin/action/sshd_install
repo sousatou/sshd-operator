@@ -1,0 +1,20 @@
+#! /bin/bash
+echo "BEGIN: $0"
+set -x
+echo "INSTALLING" > $STAGEFILE
+
+yum install -y openssh-server passwd procps net-tools findutils which
+
+ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -N ''
+/usr/sbin/sshd -D &
+
+adduser $1
+usermod -a -G wheel $1
+echo $2 | passwd --stdin $1
+
+rm /run/nologin
+
+echo "RUNNING" > $STAGEFILE
+set +x
+echo "END(SUCCESS): $0"
+

@@ -1,0 +1,23 @@
+#! /bin/bash
+LOG=./sshd_action.log
+export STAGEFILE=./stage
+
+if ! [ -e $STAGEFILE ]; then
+  echo "INITIAL" > $STAGEFILE
+fi
+STAGE=`cat $STAGEFILE`
+
+case $STAGE in
+INITIAL)
+  ./sshd_install $1 $2 &>> $LOG &
+  ;;
+INSTALLING)
+  ;;
+RUNNING)
+  ./sshd_update $1 $2 &>> $LOG &
+  ;;
+UPDATING)
+  ;;
+esac
+
+echo $STAGE

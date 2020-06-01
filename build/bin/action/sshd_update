@@ -1,0 +1,32 @@
+#! /bin/bash
+echo "BEGIN: $0"
+
+if ! [ -e ./last_check ]; then
+  touch ./last_check
+fi
+c=$(find /root -name ./last_check -mmin -1)
+if [ "$c" != "" ] ; then
+  echo "END(Success): $0, Nothing to do."
+  exit 0
+fi
+
+touch ./last_check
+echo "UPDATING" > $STAGEFILE
+
+rpm -qi openssh-server > /root/openssh-server_current
+yum update -y openssh-server
+rpm -qi openssh-server > /root/openssh-server_updated
+
+a=`cat /root/openssh-server_current`
+b=`cat /root/openssh-server_updated`
+if [ "$a" == "$b" ]; then
+  echo "No update."
+else
+  echo "Updated. Restarting sshd."
+  kill `cat /var/run/sshd.pid`
+  /usr/sbin/sshd -D &
+fi
+
+echo "RUNNING" > $STAGEFILE
+echo "END(SUCCESS): $0"
+

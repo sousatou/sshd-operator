@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sshd-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: sshd-operator
+  template:
+    metadata:
+      labels:
+        name: sshd-operator
+    spec:
+      serviceAccountName: sshd-operator
+      containers:
+        - name: sshd-operator
+          # Replace this with the built image name
+          image: sshd-operator
+          command:
+          - sshd-operator
+          imagePullPolicy: Never
+          env:
+            - name: WATCH_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: OPERATOR_NAME
+              value: "sshd-operator"
