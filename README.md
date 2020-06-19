@@ -17,17 +17,19 @@ Check status of the CR:
 ```
 # kubectl describe sshdservice example-sshdservice
 ...
+Spec:
+  Username:  user1
 Status:
   Nodeport:  31039
   Password:  fgDsc3WD
   Stage:     RUNNING
 ```
 
-When "Stage" field become "RUNNING", then you can connect to the pod using ssh command.  
-- IP address: node machine's address(any machine in the cluster)  
-- Port: Nodeport number from status(above)  
-- User: "user1" (which is specified in the CR)  
-- Password: Password from status(above, auto-generated)  
+When "Stage" field become "RUNNING", then you can connect to the pod by using ssh command.  
+- IP address: node machine's address(any worker node in the cluster)  
+- Port: Nodeport number from status(auto-generated, appeared in Status)  
+- Username: "user1" (specified in the CR, appeared in Spec)  
+- Password: Password from status(auto-generated, appeared in Status)  
 - ex) # ssh -p 31039 user1@192.168.0.100  
   
 ---
