@@ -90,17 +90,17 @@ Then it executes "sshd_action" script within the Pod.
 See: "build/bin/pod_init"  
   
 4. *Scripts running in the sshd Pod*  
-4.1 "/action/sshd_action"  
+"/action/sshd_action"  
 The script called from the operator periodically.  
 It run other sub-script according to the Pod status.  
 See: "build/bin/action/sshd_action"  
   
-4.2 "/action/sshd_install"  
+"/action/sshd_install"  
 Installs openssh-server and other packages needed in the Pod.  
 Create a user, and start sshd service.  
 After the sshd service started, the CR's status:STAGE changed to "RUNNING".  
 See: "build/bin/action/sshd_install"  
   
-4.3. "/action/sshd_update"  
+"/action/sshd_update"  
 The script checks if the latest update of openssh-server package exists, and update the service.  
 See: "build/bin/action/sshd_update"  
