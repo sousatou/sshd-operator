@@ -1,5 +1,5 @@
 # sshd-operator
-## To run the operator in (normal)Kubernetes cluster:
+## To run the operator in (normal) Kubernetes cluster:
 
 ```
 # kubectl create -f deploy/crds/sshd-operator.sousatou.com_sshdservices_crd.yaml
