@@ -1,0 +1,5 @@
+#! /bin/bash
+kubectl delete -f deploy/crds/sshd-operator.sousatou.com_v1alpha1_sshdservice_cr.yaml
+kubectl delete -f deploy/
+kubectl delete -f deploy/crds/
+
