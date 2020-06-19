@@ -83,7 +83,7 @@ The Service exposes NodePort to connect Pod's 22 port. The operator stores the N
 The oeprator ganerates password to access sshd, and stores to the CR's status.  
 See: "pkg/controller/sshdservice/sshdservice_controller.go"  
   
-3. *A script running in the operator*
+3. *A script running in the operator*  
 After the Pod created, the operator run "pod_init" script periodically, so it can setup sshd service and check its update.  
 "pod_init" script copies some files to the Pod.  
 Then it executes "sshd_action" script within the Pod.  
@@ -91,11 +91,11 @@ See: "build/bin/pod_init"
   
 4. *Scripts running in the sshd Pod*  
 4.1 "/action/sshd_action"  
-The script called from the operator periodically.
-It run other sub-script according to the Pod status.
+The script called from the operator periodically.  
+It run other sub-script according to the Pod status.  
 See: "build/bin/action/sshd_action"  
   
-4.2 "/action/sshd_install"
+4.2 "/action/sshd_install"  
 Installs openssh-server and other packages needed in the Pod.  
 Create a user, and start sshd service.  
 After the sshd service started, the CR's status:STAGE changed to "RUNNING".  
