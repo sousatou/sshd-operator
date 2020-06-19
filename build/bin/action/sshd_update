@@ -7,26 +7,26 @@ fi
 p=$(cat ./last_check)
 c=$(date '+%s')
 e=$(expr $c - $p)
-if [ $e -gt 180 ] ; then
+if [ $e -lt 180 ] ; then
   echo "END(Success): $0, Nothing to do."
   exit 0
 fi
 
-touch ./last_check
 echo "UPDATING" > $STAGEFILE
+date '+%s' > ./last_check
 
-rpm -qi openssh-server > /root/openssh-server_current
+rpm -qi openssh-server > /action/openssh-server_current
 yum update -y openssh-server
-rpm -qi openssh-server > /root/openssh-server_updated
+rpm -qi openssh-server > /action/openssh-server_updated
 
-a=`cat /root/openssh-server_current`
-b=`cat /root/openssh-server_updated`
+a=`cat /action/openssh-server_current`
+b=`cat /action/openssh-server_updated`
 if [ "$a" == "$b" ]; then
   echo "No update."
 else
   echo "Updated. Restarting sshd."
   kill `cat /var/run/sshd.pid`
-  /usr/sbin/sshd -D -E /root/sshd.log &
+  /usr/sbin/sshd -D -E /action/sshd.log &
 fi
 
 echo "RUNNING" > $STAGEFILE

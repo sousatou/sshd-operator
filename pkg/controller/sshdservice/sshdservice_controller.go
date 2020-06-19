@@ -18,9 +18,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
+
         "time"
         "os/exec"
-	"math/rand"
+        "math/rand"
         "strings"
 )
 
@@ -96,62 +97,52 @@ type ReconcileSshdService struct {
 // The Controller will requeue the Request to be processed again if the returned error is non-nil or
 // Result.Requeue is true, otherwise upon completion it will remove the work from the queue.
 func (r *ReconcileSshdService) Reconcile(request reconcile.Request) (reconcile.Result, error) {
-	reqLogger := log.WithValues("Request.Namespace", request.Namespace, "Request.Name", request.Name)
-	reqLogger.Info("Reconciling SshdService")
+  reqLogger := log.WithValues("Request.Namespace", request.Namespace, "Request.Name", request.Name)
+  reqLogger.Info("Reconciling SshdService")
 
-	// Fetch the SshdService instance
-	instance := &sshdoperatorv1alpha1.SshdService{}
-	err := r.client.Get(context.TODO(), request.NamespacedName, instance)
-	if err != nil {
-		if errors.IsNotFound(err) {
-			// Request object not found, could have been deleted after reconcile request.
-			// Owned objects are automatically garbage collected. For additional cleanup logic use finalizers.
-			// Return and don't requeue
-			return reconcile.Result{}, nil
-		}
-		// Error reading the object - requeue the request.
-		return reconcile.Result{}, err
-	}
+  // Fetch the SshdService instance
+  instance := &sshdoperatorv1alpha1.SshdService{}
+  err := r.client.Get(context.TODO(), request.NamespacedName, instance)
+  if err != nil {
+    if errors.IsNotFound(err) {
+      return reconcile.Result{}, nil
+    }
+    return reconcile.Result{}, err
+  }
 
-	// Define a new Pod object
-	pod := newPodForCR(instance)
+  // Define a new Pod object
+  pod := newPodForCR(instance)
 
-	// Set SshdService instance as the owner and controller
-	if err := controllerutil.SetControllerReference(instance, pod, r.scheme); err != nil {
-		return reconcile.Result{}, err
-	}
+  // Set SshdService instance as the owner and controller
+  if err := controllerutil.SetControllerReference(instance, pod, r.scheme); err != nil {
+    return reconcile.Result{}, err
+  }
 
-	// Check if this Pod already exists
-	found := &corev1.Pod{}
-	err = r.client.Get(context.TODO(), types.NamespacedName{Name: pod.Name, Namespace: pod.Namespace}, found)
-	if err != nil && errors.IsNotFound(err) {
-		r.updateStage(instance, "INITIALIZING")
+  // Check if this Pod already exists
+  found := &corev1.Pod{}
+  err = r.client.Get(context.TODO(), types.NamespacedName{Name: pod.Name, Namespace: pod.Namespace}, found)
+  if err != nil && errors.IsNotFound(err) {
+    // Creating a new pod
+    r.updateStage(instance, "INITIALIZING")
+      reqLogger.Info("Creating a new Pod", "Pod.Namespace", pod.Namespace, "Pod.Name", pod.Name)
+      err = r.client.Create(context.TODO(), pod)
+      if err != nil { return reconcile.Result{}, err }
+      return reconcile.Result{RequeueAfter: time.Second*5}, nil
+  } else if err != nil {
+    return reconcile.Result{}, err
+  }
 
-		reqLogger.Info("Creating a new Pod", "Pod.Namespace", pod.Namespace, "Pod.Name", pod.Name)
-		err = r.client.Create(context.TODO(), pod)
-		if err != nil {
-			return reconcile.Result{}, err
-		}
-
-		reqLogger.Info("Creating a new Service", "Pod.Namespace", pod.Namespace, "Pod.Name", pod.Name)
-		err = r.client.Create(context.TODO(), pod)
-		if err != nil {
-			return reconcile.Result{}, err
-		}
-
-                return reconcile.Result{RequeueAfter: time.Second*5}, nil
-	} else if err != nil {
-		return reconcile.Result{}, err
-	}
-
-  // For service
+  // Check if the Service already exists
   svc := newServiceForCR(instance)
+  // Set SshdService instance as the owner and controller
   if err := controllerutil.SetControllerReference(instance, svc, r.scheme); err != nil {
     return reconcile.Result{}, err
   }
+  
   found_svc := &corev1.Service{}
   err = r.client.Get(context.TODO(), types.NamespacedName{Name: svc.Name, Namespace: svc.Namespace}, found_svc)
   if err != nil && errors.IsNotFound(err) {
+    // Creating a new Service
     reqLogger.Info("Creating a new Service", "Svc.Namespace", svc.Namespace, "Svc.Name", svc.Name)
     err = r.client.Create(context.TODO(), svc)
     if err != nil {
@@ -182,7 +173,6 @@ func (r *ReconcileSshdService) Reconcile(request reconcile.Request) (reconcile.R
   return reconcile.Result{RequeueAfter: time.Second*5}, nil
 }
 
-// newPodForCR returns a busybox pod with the same name/namespace as the cr
 func newPodForCR(cr *sshdoperatorv1alpha1.SshdService) *corev1.Pod {
   labels := map[string]string{
     "app": "sshd",
@@ -269,7 +259,7 @@ func generatePassword() string {
   c := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYG1234567890"
   l := len(c)
   p := ""
-  for i	:= 0; i < 8; i++ {
+  for i := 0; i < 8; i++ {
     n := rand.Intn(l)
     p += c[n:n+1]
   }

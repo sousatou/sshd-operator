@@ -17,9 +17,9 @@ spec:
         - name: sshd-operator
           # Replace this with the built image name
           image: quay.io/sousatou/sshd-operator
+          imagePullPolicy: Always
           command:
           - sshd-operator
-          imagePullPolicy: Always
           env:
             - name: WATCH_NAMESPACE
               valueFrom:

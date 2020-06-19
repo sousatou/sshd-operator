@@ -1,0 +1,8 @@
+#! /bin/bash
+set -x
+kubectl create -f deploy/crds/sshd-operator.sousatou.com_sshdservices_crd.yaml
+kubectl create -f deploy/
+sleep 10
+kubectl create -f deploy/crds/sshd-operator.sousatou.com_v1alpha1_sshdservice_cr.yaml
+kubectl describe sshdservice example-sshdservice
+set +x
