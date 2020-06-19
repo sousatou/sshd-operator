@@ -25,8 +25,8 @@ Status:
   Stage:     RUNNING
 ```
 
-When "Stage" field become "RUNNING", then you can connect to the pod by using ssh command.  
-- IP address: node machine's address(any worker node in the cluster)  
+When "Stage" field become "RUNNING", you can connect to the pod by using ssh command.  
+- IP address: node machine's IP address(any worker node in the cluster)  
 - Port: Nodeport number from status(auto-generated, appeared in Status)  
 - Username: "user1" (specified in the CR, appeared in Spec)  
 - Password: Password from status(auto-generated, appeared in Status)  
@@ -62,8 +62,8 @@ Status:
   Stage:     RUNNING
 ```
 
-When "Stage" field become "RUNNING", then you can connect to the pod by using ssh command.  
-- IP address: node machine's address(any worker node in the cluster)  
+When "Stage" field become "RUNNING", you can connect to the pod by using ssh command.  
+- IP address: node machine's IP address(any worker node in the cluster)  
 - Port: Nodeport number from status(auto-generated, appeared in Status)  
 - Username: "user1" (specified in the CR, appeared in Spec)  
 - Password: Password from status(auto-generated, appeared in Status)  
