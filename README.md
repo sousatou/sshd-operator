@@ -75,30 +75,31 @@ In CR, you can specify the username to login to the ssh server(omittable, "user1
 See: "pkg/apis/sshdoperator/v1alpha1/sshdservice_types.go" for its definition.  
 Or, "deploy/crds/sshd-operator.sousatou.com_v1alpha1_sshdservice_cr.yaml" for its example.  
   
-###Custom Controller
+### Custom Controller
 When the operator notices the CR deployed, it creates following Pod and Service resources.  
 The Pod run "fedora" image from dockerhub(with "sleep infinity" command).  
 The Pod needs to run as root user, and have privilege, because it installs and run opensshd-server.  
 The Service exposes NodePort to connect Pod's 22 port. The operator stores the NodePort number to CR's status.  
 The oeprator ganerates password to access sshd, and stores to the CR's status.  
-See: "pkg/controller/sshdservice/sshdservice_controller.go"  
+See: "pkg/controller/sshdservice/sshdservice_controller.go".  
+Sshd Pod and Service manifests are also within the Go file.  
   
-###A script running in the operator
+### A script running in the operator
 After the Pod created, the operator run "pod_init" script periodically, so it can setup sshd service and check its update.  
-"pod_init" script copies some files to the Pod.  
+"pod_init" script copies some script files to the Sshd Pod.  
 Then it executes "sshd_action" script within the Pod.  
 See: "build/bin/pod_init"  
   
-###Scripts running in the sshd Pod
+### Scripts running in the sshd Pod
 */action/sshd_action*  
-The script called from the operator periodically.  
-It run other sub-script according to the Pod status.  
+The script which is called from the operator periodically.  
+It run other sub-script according to the Pod status(STAGE).  
 See: "build/bin/action/sshd_action"  
   
 */action/sshd_install*  
 Installs openssh-server and other packages needed in the Pod.  
 Create a user, and start sshd service.  
-After the sshd service started, the CR's status:STAGE changed to "RUNNING".  
+After the sshd service start, the CR's status(STAGE) will change to "RUNNING".  
 See: "build/bin/action/sshd_install"  
   
 */action/sshd_update*  
