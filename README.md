@@ -70,29 +70,37 @@ When "Stage" field become "RUNNING", then you can connect to the pod by using ss
 ---
 
 ## How it works
-1. *Custom Resource*. Users deploy their Custom Resources, or *CR*.  
-In the CR, you can specify the username to login to the ssh server(omittable, "user1" is default).  
+1. *Custom Resource (SshdService)*  
+In CR, you can specify the username to login to the ssh server(omittable, "user1" is default).  
 See: "pkg/apis/sshdoperator/v1alpha1/sshdservice_types.go" for its definition.  
 Or, "deploy/crds/sshd-operator.sousatou.com_v1alpha1_sshdservice_cr.yaml" for its example.  
   
-2. *Custom Controller/Operator*. When the operator notices the CR deployed, it creates following Pod and Service resources.  
+2. *Custom Controller*  
+When the operator notices the CR deployed, it creates following Pod and Service resources.  
 The Pod run "fedora" image from dockerhub(with "sleep infinity" command).  
 The Pod needs to run as root user, and have privilege, because it installs and run opensshd-server.  
 The Service exposes NodePort to connect Pod's 22 port. The operator stores the NodePort number to CR's status.  
 The oeprator ganerates password to access sshd, and stores to the CR's status.  
 See: "pkg/controller/sshdservice/sshdservice_controller.go"  
   
-3. After the Pod created, the oeprator copies some scripts to the Pod.  
-Then the operator executes "sshd_action" script within the Pod.  
-The operator run "pod_init" script periodically, so it can check the service status and openssh-server's latest update.  
-See: "build/bin/pod_init", "build/bin/action/sshd_action"  
+3. *A script running in the operator*
+After the Pod created, the operator run "pod_init" script periodically, so it can setup sshd service and check its update.  
+"pod_init" script copies some files to the Pod.  
+Then it executes "sshd_action" script within the Pod.  
+See: "build/bin/pod_init"  
   
-4. "sshd_action" script would run its sub-scripts.  
-One of them is "sshd_install", which installs openssh-server and other needed packages in the Pod.  
-Then create a user, and start sshd service.  
+4. *Scripts running in the sshd Pod*  
+4.1 "/action/sshd_action"  
+The script called from the operator periodically.
+It run other sub-script according to the Pod status.
+See: "build/bin/action/sshd_action"  
+  
+4.2 "/action/sshd_install"
+Installs openssh-server and other packages needed in the Pod.  
+Create a user, and start sshd service.  
 After the sshd service started, the CR's status:STAGE changed to "RUNNING".  
 See: "build/bin/action/sshd_install"  
   
-5. Another sub-script is "sshd_update".  
-The script checks whether the latest update of openssh-server package exists, and update the service.  
+4.3. "/action/sshd_update"  
+The script checks if the latest update of openssh-server package exists, and update the service.  
 See: "build/bin/action/sshd_update"  
